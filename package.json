@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "start": "nodemon chapter1/helloWord.js --config nodemon.json"
+  }
+}
