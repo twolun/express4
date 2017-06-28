@@ -1,5 +1,13 @@
 {
   "scripts": {
-    "start": "nodemon chapter1/helloWord.js --config nodemon.json"
+    "start": "nodemon meadowlark/meadowlark.js --config nodemon.json"
+  },
+  "dependencies": {
+    "express": "^4.15.3",
+    "express3-handlebars": "^0.5.2",
+    "qs": "^6.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }

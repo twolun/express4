@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "start": "../node_modules/.bin/nodemon ./meadowlark.js --config ../nodemon.json"
+  }
+}
