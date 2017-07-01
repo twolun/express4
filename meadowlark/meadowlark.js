@@ -1,23 +1,30 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const formidable = require('formidable');
 const handlebars = require('express3-handlebars')
                     .create({ defaultLayout:'main' });
 const fortune = require('./lib/fortune');
+const credentials = require('./credentials');
 
 app.disable('x-powered-by');
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser());
+app.use(cookieParser(credentials.cookieSecret));
 
 app.set('port', process.env.PORT || 3000);
 
 app.get('/', function(req, res){
+  res.cookie('signed_monster', 'nom nom', { signed: true });
+  res.cookie('monster', 'nom nom');
   res.render('home');
 })
 app.get('/about', function(req, res){
+  console.log(req.cookies.monster);
+  console.log(req.signedCookies)
   res.cookie('token', 'my token ising been seeing...')
   res.render('about', {fortune: fortune.getFortune()});
 })
