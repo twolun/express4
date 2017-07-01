@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
+const formidable = require('formidable');
 const handlebars = require('express3-handlebars')
                     .create({ defaultLayout:'main' });
 const fortune = require('./lib/fortune');
@@ -8,6 +10,7 @@ app.disable('x-powered-by');
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
+app.use(bodyParser());
 
 app.set('port', process.env.PORT || 3000);
 
@@ -29,6 +32,43 @@ app.get('/headers', function(req, res){
     s += name + ':' + req.headers[name] + '<br />';
   }
   res.send(s);
+})
+app.get('/newsletter', function(req, res){
+  res.render('newsletter', {csrf: 'CSRF token goes here'})
+})
+app.get('/thank-you', function(req, res){
+  res.render('thank-you')
+})
+app.post('/process', function(req, res){
+  // console.log('Form (from querystring): ' + req.query.form);
+  // console.log('CSRF token (from hidden form field): ' + req.body._csrf);
+  // console.log('Name (from visible form hield): ' + req.body.name);
+  // console.log('Email (from visible form field: ' + req.body.email);
+  // res.redirect(303, '/thank-you');
+  if(req.xhr || req.accepted('json, html') === 'json') {
+    res.send({success: true});
+  } else {
+    // 如果发生错误重定向到错误页面
+    res.send(303, '/thank-you');
+  }
+})
+app.get('/content/vacation-photo', function(req, res){
+  const now = new Date();
+  res.render('content/vacation-photo', {
+    year: now.getFullYear(),
+    month: now.getMonth()
+  })
+})
+app.post('/content/vacation-photo/:year/:month', function(req, res){
+  const form = formidable.IncomingForm();
+  form.parse(req, function(err, fields, files){
+    if(err) res.redirect(303, '/error');
+    console.log('recieved fields: ');
+    console.log(fields);
+    console.log('recieve files: ');
+    console.log(files);
+    res.redirect(303, '/thank-you');
+  })
 })
 
 var tours = [ 
