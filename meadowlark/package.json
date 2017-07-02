@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "start": "../node_modules/.bin/nodemon ./meadowlark.js --config ../nodemon.json"
+    "start": "NODE_ENV=dev ../node_modules/.bin/nodemon ./meadowlark.js --config ../nodemon.json"
   }
 }

@@ -15,13 +15,16 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser());
 app.use(cookieParser(credentials.cookieSecret));
 
-app.set('port', process.env.PORT || 3000);
 
-app.get('/', function(req, res){
-  res.cookie('signed_monster', 'nom nom', { signed: true });
-  res.cookie('monster', 'nom nom');
-  res.render('home');
+app.set('port', process.env.PORT || 3000);
+app.use('/', function(req, res){
+  res.render('home')
 })
+// app.get('/', function(req, res){
+//   res.cookie('signed_monster', 'nom nom', { signed: true });
+//   res.cookie('monster', 'nom nom');
+//   res.render('home');
+// })
 app.get('/about', function(req, res){
   console.log(req.cookies.monster);
   console.log(req.signedCookies)
@@ -116,7 +119,16 @@ app.delete('/api/tours/:id', function(req, res){
   }
   console.log(tours)
 })
-
+switch(app.get('env')) {
+  case 'dev': 
+    app.use(require('morgan')('dev'));
+    break;
+  case 'production':
+    app.use(require('express-logger')({
+      path: __dirname + '/log/requests.log'
+    }));
+    break;
+}
 // 定制404页面
 app.use(function(req, res){
   res.status(404);
@@ -130,6 +142,14 @@ app.use(function(err, req, res, next){
   res.render('500');
 })
 
-app.listen(app.get('port'), function(){
-  console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl + C to teminate')
-})
+function startServer() {
+  app.listen(app.get('port'), function(){
+    console.log(app.get('env'))
+    console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl + C to teminate')
+  })
+}
+if(require.main === module) {
+  startServer();
+} else {
+  module.exports = startServer;
+}
