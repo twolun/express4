@@ -1,10 +1,12 @@
 const express = require('express');
 const app = express();
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const formidable = require('formidable');
 const handlebars = require('express3-handlebars')
                     .create({ defaultLayout:'main' });
+const vhost = require('vhost');
 const fortune = require('./lib/fortune');
 const credentials = require('./credentials');
 
@@ -15,11 +17,16 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser());
 app.use(cookieParser(credentials.cookieSecret));
 
+const admin = express.Router();
+app.use(vhost('admin.*', admin));
+admin.get('/', function(req, res){
+  res.render('admin/home');
+})
 
 app.set('port', process.env.PORT || 3000);
-app.use('/', function(req, res){
-  res.render('home')
-})
+// app.use('/', function(req, res){
+//   res.render('home')
+// })
 // app.get('/', function(req, res){
 //   res.cookie('signed_monster', 'nom nom', { signed: true });
 //   res.cookie('monster', 'nom nom');
@@ -129,6 +136,19 @@ switch(app.get('env')) {
     }));
     break;
 }
+
+let autoViews = {};
+app.use(function(req, res, next){
+  const path = req.path.toLowerCase();
+  console.log(path)
+  if(autoViews[path]) return res.render(autoViews[path]);
+  if(fs.existsSync(__dirname + '/views' + path + '.handlebars')) {
+    autoViews[path] = path.replace(/^\//, '');
+    return res.render(autoViews[path]);
+  }
+  next();
+})
+
 // 定制404页面
 app.use(function(req, res){
   res.status(404);

@@ -10,7 +10,8 @@
     "express3-handlebars": "^0.5.2",
     "formidable": "^1.1.1",
     "morgan": "^1.8.2",
-    "qs": "^6.4.0"
+    "qs": "^6.4.0",
+    "vhost": "^3.0.2"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
