@@ -1,5 +1,5 @@
 const express = require('express');
-const app = express();
+const rest = require('connect-rest');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -9,6 +9,7 @@ const handlebars = require('express3-handlebars')
 const vhost = require('vhost');
 const fortune = require('./lib/fortune');
 const credentials = require('./credentials');
+const app = express();
 
 app.disable('x-powered-by');
 app.engine('handlebars', handlebars.engine);
@@ -148,6 +149,13 @@ app.use(function(req, res, next){
   }
   next();
 })
+
+// 使用api
+const apiOptions = {
+  context: '/api',
+  domain: require('domain').create()
+};
+app.use(rest.rester(apiOptions))
 
 // 定制404页面
 app.use(function(req, res){
